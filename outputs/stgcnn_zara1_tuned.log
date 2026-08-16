@@ -1,0 +1,28 @@
+[zara1] epoch   1/250  nll=-0.3227  val_ADE(det)=0.735  val_ADE(best5)=0.603
+[zara1] epoch  10/250  nll=-2.0586  val_ADE(det)=0.480  val_ADE(best5)=0.403
+[zara1] epoch  20/250  nll=-2.2722  val_ADE(det)=0.463  val_ADE(best5)=0.385
+[zara1] epoch  30/250  nll=-2.3480  val_ADE(det)=0.460  val_ADE(best5)=0.386
+[zara1] epoch  40/250  nll=-2.4282  val_ADE(det)=0.461  val_ADE(best5)=0.384
+[zara1] epoch  50/250  nll=-2.4965  val_ADE(det)=0.458  val_ADE(best5)=0.382
+[zara1] epoch  60/250  nll=-2.5336  val_ADE(det)=0.455  val_ADE(best5)=0.379
+[zara1] epoch  70/250  nll=-2.6213  val_ADE(det)=0.455  val_ADE(best5)=0.377
+[zara1] epoch  80/250  nll=-2.6499  val_ADE(det)=0.466  val_ADE(best5)=0.387
+[zara1] epoch  90/250  nll=-2.6909  val_ADE(det)=0.492  val_ADE(best5)=0.406
+[zara1] epoch 100/250  nll=-2.7224  val_ADE(det)=0.452  val_ADE(best5)=0.377
+[zara1] epoch 110/250  nll=-2.9343  val_ADE(det)=0.446  val_ADE(best5)=0.372
+[zara1] epoch 120/250  nll=-2.9284  val_ADE(det)=0.450  val_ADE(best5)=0.376
+[zara1] epoch 130/250  nll=-2.9477  val_ADE(det)=0.456  val_ADE(best5)=0.380
+[zara1] epoch 140/250  nll=-2.9320  val_ADE(det)=0.450  val_ADE(best5)=0.375
+[zara1] epoch 150/250  nll=-2.9605  val_ADE(det)=0.451  val_ADE(best5)=0.379
+[zara1] epoch 160/250  nll=-2.9675  val_ADE(det)=0.451  val_ADE(best5)=0.378
+[zara1] epoch 170/250  nll=-2.9771  val_ADE(det)=0.451  val_ADE(best5)=0.374
+[zara1] epoch 180/250  nll=-2.9845  val_ADE(det)=0.452  val_ADE(best5)=0.380
+[zara1] epoch 190/250  nll=-3.0144  val_ADE(det)=0.448  val_ADE(best5)=0.378
+[zara1] epoch 200/250  nll=-3.0155  val_ADE(det)=0.468  val_ADE(best5)=0.391
+[zara1] epoch 210/250  nll=-3.1521  val_ADE(det)=0.446  val_ADE(best5)=0.373
+[zara1] epoch 220/250  nll=-3.1590  val_ADE(det)=0.454  val_ADE(best5)=0.381
+[zara1] epoch 230/250  nll=-3.1955  val_ADE(det)=0.452  val_ADE(best5)=0.377
+[zara1] epoch 240/250  nll=-3.2074  val_ADE(det)=0.448  val_ADE(best5)=0.375
+[zara1] epoch 250/250  nll=-3.2027  val_ADE(det)=0.445  val_ADE(best5)=0.374
+[zara1] TEST  det: ADE=0.423 FDE=0.910 | best-of-20: ADE=0.283 FDE=0.497  (198s)
+

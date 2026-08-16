@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.pyc
+
+# Kes parsiranih sekvenci -- regenerise se automatski
+.cache/
+
+# ETH-UCY podaci: 14 MB tudjih podataka, preuzimaju se sa scripts/download_data.sh
+data/
+
+# Checkpointi modela su binarni i regenerisu se treningom...
+outputs/*.pt
+# ...ali rezultati, logovi i slike ostaju u repou jer ulaze u izvestaj.

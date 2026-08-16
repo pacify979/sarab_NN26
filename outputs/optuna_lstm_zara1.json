@@ -1,0 +1,195 @@
+{
+  "model": "lstm",
+  "scene": "zara1",
+  "best_value": 0.4282854166295793,
+  "best_params": {
+    "lr": 0.00321623546920742,
+    "hidden_dim": 256,
+    "embedding_dim": 32,
+    "num_layers": 1,
+    "dropout": 0.007625738023228556
+  },
+  "n_trials": 15,
+  "trials": [
+    {
+      "number": 0,
+      "state": "COMPLETE",
+      "value": 0.4345967835850186,
+      "params": {
+        "lr": 0.00043284502212938834,
+        "hidden_dim": 32,
+        "embedding_dim": 64,
+        "num_layers": 2,
+        "dropout": 0.006175348288740734
+      }
+    },
+    {
+      "number": 1,
+      "state": "COMPLETE",
+      "value": 0.43262316120995414,
+      "params": {
+        "lr": 0.0044447541666908135,
+        "hidden_dim": 32,
+        "embedding_dim": 32,
+        "num_layers": 2,
+        "dropout": 0.04184815819561255
+      }
+    },
+    {
+      "number": 2,
+      "state": "COMPLETE",
+      "value": 0.43562593982543474,
+      "params": {
+        "lr": 0.0003135775732257748,
+        "hidden_dim": 128,
+        "embedding_dim": 128,
+        "num_layers": 1,
+        "dropout": 0.019515477895583853
+      }
+    },
+    {
+      "number": 3,
+      "state": "PRUNED",
+      "value": 0.4755926882779157,
+      "params": {
+        "lr": 0.004093813608598782,
+        "hidden_dim": 32,
+        "embedding_dim": 16,
+        "num_layers": 1,
+        "dropout": 0.2727961206236346
+      }
+    },
+    {
+      "number": 4,
+      "state": "PRUNED",
+      "value": 0.7287804763994099,
+      "params": {
+        "lr": 0.00027520696850790545,
+        "hidden_dim": 32,
+        "embedding_dim": 32,
+        "num_layers": 2,
+        "dropout": 0.17936999364332554
+      }
+    },
+    {
+      "number": 5,
+      "state": "COMPLETE",
+      "value": 0.42850204014483795,
+      "params": {
+        "lr": 0.0036832964384234204,
+        "hidden_dim": 256,
+        "embedding_dim": 64,
+        "num_layers": 1,
+        "dropout": 0.16280882494747453
+      }
+    },
+    {
+      "number": 6,
+      "state": "PRUNED",
+      "value": 0.5221528753086373,
+      "params": {
+        "lr": 0.000173550564698551,
+        "hidden_dim": 128,
+        "embedding_dim": 64,
+        "num_layers": 2,
+        "dropout": 0.2313811040057837
+      }
+    },
+    {
+      "number": 7,
+      "state": "PRUNED",
+      "value": 0.7077862234027298,
+      "params": {
+        "lr": 0.00013359790328445562,
+        "hidden_dim": 128,
+        "embedding_dim": 16,
+        "num_layers": 2,
+        "dropout": 0.19126724140656393
+      }
+    },
+    {
+      "number": 8,
+      "state": "COMPLETE",
+      "value": 0.4282854166295793,
+      "params": {
+        "lr": 0.00321623546920742,
+        "hidden_dim": 256,
+        "embedding_dim": 32,
+        "num_layers": 1,
+        "dropout": 0.007625738023228556
+      }
+    },
+    {
+      "number": 9,
+      "state": "PRUNED",
+      "value": 0.7570985040546935,
+      "params": {
+        "lr": 0.00015251209898002935,
+        "hidden_dim": 64,
+        "embedding_dim": 16,
+        "num_layers": 1,
+        "dropout": 0.023093972948637898
+      }
+    },
+    {
+      "number": 10,
+      "state": "PRUNED",
+      "value": 0.5266259007247878,
+      "params": {
+        "lr": 0.0012291462358789713,
+        "hidden_dim": 256,
+        "embedding_dim": 32,
+        "num_layers": 1,
+        "dropout": 0.09948525433427291
+      }
+    },
+    {
+      "number": 11,
+      "state": "PRUNED",
+      "value": 0.4911576027487531,
+      "params": {
+        "lr": 0.0017606863380915235,
+        "hidden_dim": 256,
+        "embedding_dim": 64,
+        "num_layers": 1,
+        "dropout": 0.10585341175194604
+      }
+    },
+    {
+      "number": 12,
+      "state": "PRUNED",
+      "value": 0.47769749495718217,
+      "params": {
+        "lr": 0.002013576604659616,
+        "hidden_dim": 256,
+        "embedding_dim": 128,
+        "num_layers": 1,
+        "dropout": 0.10771965998941996
+      }
+    },
+    {
+      "number": 13,
+      "state": "PRUNED",
+      "value": 0.5204465466516989,
+      "params": {
+        "lr": 0.0026270194189255587,
+        "hidden_dim": 256,
+        "embedding_dim": 32,
+        "num_layers": 1,
+        "dropout": 0.15544774969929556
+      }
+    },
+    {
+      "number": 14,
+      "state": "PRUNED",
+      "value": 0.5015880524376293,
+      "params": {
+        "lr": 0.000964263918725563,
+        "hidden_dim": 256,
+        "embedding_dim": 64,
+        "num_layers": 1,
+        "dropout": 0.28848232526836104
+      }
+    }
+  ]
+}
