@@ -163,10 +163,12 @@ sarab_NN26/
 │   └── download_data.sh           # fetches the standardized ETH-UCY split
 ├── docs/
 │   ├── PROJECT_GUIDE.md           # this file
+│   ├── SaraBabic_NN26_prezentacija.pptx   # presentation
 │   └── paper/                     # IEEE-format paper
-│       ├── SaraBabic_paper.tex/.pdf  #   IEEE-format paper
-│       ├── refs.bib                   #   bibliography
-│       └── figures/{en,sr}/           #   figures with localised labels
+│       ├── SaraBabic_paper.tex    #   LaTeX source (IEEEtran)
+│       ├── SaraBabic_paper.pdf    #   compiled paper
+│       ├── refs.bib               #   bibliography
+│       └── figures/en/            #   figures used by the paper
 ├── outputs/                       # checkpoints (gitignored), logs, figures, results
 │   ├── *.pt                       # trained models
 │   ├── *_log.json                 # per-scene training history + test metrics
@@ -178,8 +180,6 @@ sarab_NN26/
 ├── .gitignore
 └── README.md
 ```
-
-Total implementation: ~1,600 lines of Python across 9 modules.
 
 ---
 
@@ -396,17 +396,17 @@ Roughly 90 seconds per scene on a laptop GPU; about 8 minutes for all five.
 ...
 [eth] TEST  ADE=1.007 m  FDE=1.996 m  (94s)
 ...
-====================================================
-SCENA          ADE (m)     FDE (m)
-----------------------------------------------------
-eth              1.007       1.996
-hotel            0.457       0.936
-univ             0.577       1.278
-zara1            0.402       0.886
-zara2            0.316       0.699
-----------------------------------------------------
-PROSEK           0.552       1.159
-====================================================
+====================================
+SCENE               ade          fde
+------------------------------------
+eth               1.007        1.996
+hotel             0.457        0.936
+univ              0.577        1.278
+zara1             0.402        0.886
+zara2             0.316        0.699
+------------------------------------
+AVERAGE           0.552        1.159
+====================================
 ```
 
 **Interpretation:** an average ADE of 0.552 m. The Social-GAN paper reports 0.70 m for
@@ -525,15 +525,15 @@ About 3 minutes per scene, 15 minutes total.
 [eth] TEST  det: ADE=1.043 FDE=2.113 | best-of-20: ADE=0.819 FDE=1.582  (179s)
 ...
 ====================================================================
-SCENA            ADE det      FDE det      ADE b20      FDE b20
+SCENE           ADE det      FDE det      ADE b20      FDE b20
 --------------------------------------------------------------------
-eth                1.043        2.113        0.819        1.582
-hotel              0.436        0.880        0.311        0.561
-univ               0.568        1.202        0.412        0.803
-zara1              0.419        0.904        0.283        0.498
-zara2              0.350        0.761        0.251        0.474
+eth               1.043        2.113        0.819        1.582
+hotel             0.436        0.880        0.311        0.561
+univ              0.568        1.202        0.412        0.803
+zara1             0.419        0.904        0.283        0.498
+zara2             0.350        0.761        0.251        0.474
 --------------------------------------------------------------------
-PROSEK             0.563        1.172        0.415        0.784
+AVERAGE           0.563        1.172        0.415        0.784
 ====================================================================
 ```
 
@@ -586,17 +586,17 @@ python -m src.train_lstm --scene all --epochs 250 --probabilistic
 ```
 [eth] TEST  det: ADE=1.002 FDE=1.993 | best-of-20: ADE=0.775 FDE=1.405  (272s)
 ...
-==========================================================
-SCENA         ade_det     fde_det  ade_best20  fde_best20
-----------------------------------------------------------
-eth             1.002       1.993       0.775       1.405
-hotel           0.516       1.075       0.342       0.659
-univ            0.583       1.255       0.411       0.816
-zara1           0.419       0.924       0.276       0.497
-zara2           0.323       0.724       0.221       0.428
-----------------------------------------------------------
-PROSEK          0.569       1.194       0.405       0.761
-==========================================================
+==============================================================
+SCENE           ade_det      fde_det   ade_best20   fde_best20
+--------------------------------------------------------------
+eth               1.002        1.993        0.775        1.405
+hotel             0.516        1.075        0.342        0.659
+univ              0.583        1.255        0.411        0.816
+zara1             0.419        0.924        0.276        0.497
+zara2             0.323        0.724        0.221        0.428
+--------------------------------------------------------------
+AVERAGE           0.568        1.194        0.405        0.761
+==============================================================
 ```
 
 ---
@@ -648,8 +648,8 @@ Roughly 7 and 20 minutes respectively.
   ...
   trial 13  COMPLETE   val_ADE=0.3894  {'lr': 0.00272, 'n_stgcnn': 2, 'n_txpcnn': 7, ...}
 ============================================================
-Najbolji val_ADE: 0.3894 m
-Najbolji hiperparametri:
+Best val_ADE: 0.3894 m
+Best hyperparameters:
   lr               = 0.00271550054407983
   n_stgcnn         = 2
   n_txpcnn         = 7
@@ -738,7 +738,7 @@ python -m src.compare
 ### 11.4 Expected output
 
 ```
-Sacuvano 4 para slika + krive ucenja u outputs/figures/
+Saved 4 figure pairs + learning curves to outputs/figures/
 ```
 
 and `outputs/results.md` containing the two comparison tables plus the literature
@@ -767,7 +767,7 @@ bash scripts/download_data.sh
 # 3. baseline                        (~8 min)
 python -m src.train_lstm --scene all --epochs 100
 
-# 4. probabilistic control           (~10 min)
+# 4. probabilistic control           (~19 min)
 python -m src.train_lstm --scene all --epochs 250 --probabilistic
 
 # 5. graph model                     (~15 min)
@@ -784,7 +784,7 @@ done
 python -m src.compare
 ```
 
-Total: roughly 65 minutes on a laptop GPU.
+Total: roughly 75 minutes on a laptop GPU.
 
 > **Long runs:** if you launch training from a terminal you might close, detach it so it
 > survives:
@@ -890,9 +890,7 @@ compare 20 attempts to 1.
 The architecture is taken from the CVPR 2020 paper and its reference implementation. What
 is original here is the entire surrounding system: the data pipeline, the baselines, the
 evaluation module, the block-diagonal optimization, the Optuna integration, the
-visualization, and the controlled comparison. The section *"Sta je preuzeto, a sta
-samostalno uradjeno"* in `README.md` states this explicitly, which is the academically
-correct thing to do.
+visualization, and the controlled comparison.
 
 **Why only 15 Optuna trials?**
 TPE with median pruning extracts a usable signal from that budget, and the last trials

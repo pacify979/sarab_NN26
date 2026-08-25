@@ -213,7 +213,7 @@ def main():
         keys = ["test_ade_det", "test_fde_det", "test_ade_best20", "test_fde_best20"]
         avg = {k: sum(r[k] for r in results) / len(results) for k in keys}
         print("=" * 68)
-        print(f"{'SCENA':<10}{'ADE det':>13}{'FDE det':>13}{'ADE b20':>13}{'FDE b20':>13}")
+        print(f"{'SCENE':<10}{'ADE det':>13}{'FDE det':>13}{'ADE b20':>13}{'FDE b20':>13}")
         print("-" * 68)
         for r in results:
             print(
@@ -222,7 +222,7 @@ def main():
             )
         print("-" * 68)
         print(
-            f"{'PROSEK':<10}{avg['test_ade_det']:>13.3f}{avg['test_fde_det']:>13.3f}"
+            f"{'AVERAGE':<10}{avg['test_ade_det']:>13.3f}{avg['test_fde_det']:>13.3f}"
             f"{avg['test_ade_best20']:>13.3f}{avg['test_fde_best20']:>13.3f}"
         )
         print("=" * 68)

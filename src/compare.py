@@ -54,6 +54,15 @@ def main():
             "stg_fde_20": stg["test_fde_best20"] if stg else None,
         })
 
+    # The training budget is read back from the logs, so the table can never disagree with
+    # the runs that produced it. It matters for Comparison 2: the two probabilistic models
+    # must share a budget for that comparison to be properly controlled.
+    epochs = {}
+    for prefix in ("lstm", "lstm_prob", "stgcnn"):
+        vals = {d["epochs"] for s in SCENES
+                if (d := load(os.path.join(args.out_dir, f"{prefix}_{s}_log.json")))}
+        epochs[prefix] = str(vals.pop()) if len(vals) == 1 else "mixed"
+
     def avg(key):
         vals = [r[key] for r in rows if r[key] is not None]
         return sum(vals) / len(vals) if vals else None
@@ -65,6 +74,10 @@ def main():
     lines.append("# Results\n")
     lines.append("Protocol: 8 observed frames (3.2 s) -> 12 predicted frames (4.8 s), "
                  "leave-one-scene-out. All values in metres; lower is better.\n")
+    lines.append(f"Training budget: LSTM baseline {epochs['lstm']} epochs, "
+                 f"LSTM-prob {epochs['lstm_prob']} epochs, "
+                 f"Social-STGCNN {epochs['stgcnn']} epochs. "
+                 "Checkpoints are selected by validation ADE in every case.\n")
 
     lines.append("## Comparison 1: deterministic models (single predicted path)\n")
     lines.append("| Scene | LSTM ADE | LSTM FDE | ST-GCNN ADE | ST-GCNN FDE |")
@@ -92,6 +105,9 @@ def main():
                  "head, the same loss and the same evaluation protocol. The only difference is "
                  "whether the model can see other agents, so the difference measures the "
                  "contribution of social modelling alone.\n")
+    lines.append(f"Both models were trained for the same number of epochs "
+                 f"(LSTM-prob {epochs['lstm_prob']}, Social-STGCNN {epochs['stgcnn']}), so the "
+                 "training budget is not a confounding variable either.\n")
     lines.append("| Scene | LSTM-prob ADE | LSTM-prob FDE | ST-GCNN ADE | ST-GCNN FDE |")
     lines.append("|---|---|---|---|---|")
     for r in rows:

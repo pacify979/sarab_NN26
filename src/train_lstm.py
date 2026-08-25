@@ -191,12 +191,12 @@ def main():
         avg = {k: sum(r[k] for r in results) / len(results) for k in keys}
         w = 13
         print("=" * (10 + w * len(keys)))
-        print(f"{'SCENA':<10}" + "".join(f"{k.replace('test_', ''):>{w}}" for k in keys))
+        print(f"{'SCENE':<10}" + "".join(f"{k.replace('test_', ''):>{w}}" for k in keys))
         print("-" * (10 + w * len(keys)))
         for r in results:
             print(f"{r['scene']:<10}" + "".join(f"{r[k]:>{w}.3f}" for k in keys))
         print("-" * (10 + w * len(keys)))
-        print(f"{'PROSEK':<10}" + "".join(f"{avg[k]:>{w}.3f}" for k in keys))
+        print(f"{'AVERAGE':<10}" + "".join(f"{avg[k]:>{w}.3f}" for k in keys))
         print("=" * (10 + w * len(keys)))
 
         prefix = "lstm_prob" if args.probabilistic else "lstm"

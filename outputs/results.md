@@ -2,6 +2,8 @@
 
 Protocol: 8 observed frames (3.2 s) -> 12 predicted frames (4.8 s), leave-one-scene-out. All values in metres; lower is better.
 
+Training budget: LSTM baseline 100 epochs, LSTM-prob 250 epochs, Social-STGCNN 250 epochs. Checkpoints are selected by validation ADE in every case.
+
 ## Comparison 1: deterministic models (single predicted path)
 
 | Scene | LSTM ADE | LSTM FDE | ST-GCNN ADE | ST-GCNN FDE |
@@ -19,6 +21,8 @@ Protocol: 8 observed frames (3.2 s) -> 12 predicted frames (4.8 s), leave-one-sc
 ## Comparison 2: probabilistic models (identical NLL loss, best-of-20)
 
 This is the **key comparison**: both models use an identical bivariate Gaussian head, the same loss and the same evaluation protocol. The only difference is whether the model can see other agents, so the difference measures the contribution of social modelling alone.
+
+Both models were trained for the same number of epochs (LSTM-prob 250, Social-STGCNN 250), so the training budget is not a confounding variable either.
 
 | Scene | LSTM-prob ADE | LSTM-prob FDE | ST-GCNN ADE | ST-GCNN FDE |
 |---|---|---|---|---|
