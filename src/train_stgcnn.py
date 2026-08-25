@@ -1,20 +1,20 @@
 """
-Trening skripta za Social-STGCNN.
+Training script for Social-STGCNN.
 
-Primer:
-    python -m src.train_stgcnn --scene eth --epochs 150
-    python -m src.train_stgcnn --scene all --epochs 150
+Examples:
+    python -m src.train_stgcnn --scene eth --epochs 250
+    python -m src.train_stgcnn --scene all --epochs 250
 
-VAZNA METODOLOSKA NAPOMENA (obavezno navesti u izvestaju):
-Social-STGCNN je PROBABILISTICKI model -- predvidja raspodelu, ne jednu putanju.
-U literaturi se njegov ADE/FDE prijavljuje kao "Best-of-20": uzorkuje se 20
-trajektorija i uzima se najbolja. LSTM baseline je deterministicki i daje jednu
-putanju. Direktno poredjenje ta dva broja je nekorektno (poredimo 1 pokusaj sa
-najboljim od 20), pa ova skripta racuna OBE varijante:
-    - ADE/FDE (deterministic): koristi se srednja vrednost raspodele (mu) --
-      posteno poredjenje sa LSTM-om
-    - ADE/FDE (best-of-20): standardni protokol iz radova -- poredjenje sa
-      brojkama iz literature
+IMPORTANT METHODOLOGICAL NOTE (must be stated in the report):
+Social-STGCNN is a PROBABILISTIC model -- it predicts a distribution, not a single path.
+In the literature its ADE/FDE is reported as "Best-of-20": 20 trajectories are sampled
+and the best one is kept. The LSTM baseline is deterministic and produces one path.
+Comparing those two numbers directly is incorrect (it pits 1 attempt against the best of
+20), so this script computes BOTH variants:
+    - ADE/FDE (deterministic): uses the mean of the distribution (mu) -- a fair
+      comparison against the LSTM
+    - ADE/FDE (best-of-20): the standard protocol from the papers -- for comparison
+      against published figures
 """
 
 import argparse
@@ -34,26 +34,26 @@ SCENES = ["eth", "hotel", "univ", "zara1", "zara2"]
 
 
 def make_loader(data_dir: str, split: str, shuffle: bool, batch_size: int = 32):
-    """Batch = vise scena spakovanih u jedan blok-dijagonalni graf (vidi build_adjacency)."""
+    """A batch = several scenes packed into one block-diagonal graph (see build_adjacency)."""
     dset = TrajectoryDataset(os.path.join(data_dir, split))
     return dset, DataLoader(dset, batch_size=batch_size, shuffle=shuffle, collate_fn=seq_collate)
 
 
 def prepare_inputs(obs_traj: torch.Tensor, obs_traj_rel: torch.Tensor, seq_start_end=None):
-    """Iz (T, V, 2) pravi ulaze koje model ocekuje: v=(1, 2, T, V), A=(1, T, V, V)."""
+    """Turns (T, V, 2) into the inputs the model expects: v=(1, 2, T, V), A=(1, T, V, V)."""
     v = obs_traj_rel.permute(2, 0, 1).unsqueeze(0)              # (1, 2, T, V)
     a = build_adjacency(obs_traj, seq_start_end).unsqueeze(0)   # (1, T, V, V)
     return v, a
 
 
 def sample_trajectories(pred_params: torch.Tensor, n_samples: int) -> torch.Tensor:
-    """Uzorkuje trajektorije iz predvidjene bivarijantne Gausove raspodele.
+    """Samples trajectories from the predicted bivariate Gaussian distribution.
 
     Args:
         pred_params: (T, V, 5)
-        n_samples: broj uzoraka (K)
+        n_samples: number of samples (K)
     Returns:
-        (K, T, V, 2) uzorkovana relativna pomeranja
+        (K, T, V, 2) sampled relative displacements
     """
     mu = pred_params[..., 0:2]
     sx = torch.exp(pred_params[..., 2]).clamp(min=1e-3)
@@ -72,7 +72,7 @@ def sample_trajectories(pred_params: torch.Tensor, n_samples: int) -> torch.Tens
 
 @torch.no_grad()
 def evaluate(model: nn.Module, loader, device: str, n_samples: int = 20):
-    """Vraca (ade_det, fde_det, ade_best20, fde_best20), sve u metrima."""
+    """Returns (ade_det, fde_det, ade_best20, fde_best20), all in metres."""
     model.eval()
     det = ErrorAccumulator()
     best_ade_sum, best_fde_sum, n_total = 0.0, 0.0, 0
@@ -82,15 +82,15 @@ def evaluate(model: nn.Module, loader, device: str, n_samples: int = 20):
         v, a = prepare_inputs(obs, obs_rel, sse)
         out = model(v, a).squeeze(0).permute(1, 2, 0)  # (T_pred, V, 5)
 
-        # --- deterministicka varijanta: srednja vrednost raspodele ---
+        # --- deterministic variant: the mean of the distribution ---
         pred_abs = relative_to_abs(out[..., 0:2], obs[-1])
         det.update(pred_abs, pred_gt)
 
-        # --- best-of-K varijanta (vektorizovano preko svih K uzoraka odjednom) ---
+        # --- best-of-K variant (vectorised over all K samples at once) ---
         samples = sample_trajectories(out, n_samples)          # (K, T, V, 2)
         abs_k = torch.cumsum(samples, dim=1) + obs[-1]         # (K, T, V, 2)
         err = torch.norm(abs_k - pred_gt.unsqueeze(0), dim=-1)  # (K, T, V)
-        # minimum se uzima po agentu (standardni protokol iz literature)
+        # the minimum is taken per agent (the standard protocol in the literature)
         best_ade_sum += err.mean(dim=1).min(dim=0).values.sum().item()
         best_fde_sum += err[:, -1].min(dim=0).values.sum().item()
         n_total += pred_gt.shape[1]
@@ -143,7 +143,7 @@ def train_one_scene(scene: str, args) -> dict:
 
         scheduler.step()
 
-        # validacija je skupa (uzorkovanje), pa je radimo na svakih val_every epoha
+        # validation is expensive (sampling), so it runs every val_every epochs
         if epoch % args.val_every == 0 or epoch == args.epochs or epoch == 1:
             val_det_ade, _, val_best_ade, _ = evaluate(
                 model, val_loader, device, n_samples=args.val_samples
@@ -192,8 +192,8 @@ def main():
     p.add_argument("--epochs", type=int, default=150)
     p.add_argument("--lr", type=float, default=1e-3)
     p.add_argument("--lr_step", type=int, default=60)
-    p.add_argument("--batch_size", type=int, default=32, help="broj scena u jednom blok-dijagonalnom grafu")
-    p.add_argument("--val_every", type=int, default=5, help="validacija na svakih N epoha")
+    p.add_argument("--batch_size", type=int, default=32, help="scenes packed into one block-diagonal graph")
+    p.add_argument("--val_every", type=int, default=5, help="run validation every N epochs")
     p.add_argument("--n_stgcnn", type=int, default=1)
     p.add_argument("--n_txpcnn", type=int, default=5)
     p.add_argument("--output_feat", type=int, default=5)

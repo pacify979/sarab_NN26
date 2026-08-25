@@ -1,15 +1,15 @@
 """
-Baseline: Vanilla LSTM (encoder-decoder), bez ikakve svesti o drugim agentima.
+Baseline: Vanilla LSTM (encoder-decoder), with no awareness of other agents.
 
-Svaki pesak se posmatra kao nezavisna vremenska serija -- sto je upravo poenta
-baseline-a: pokazuje koliko se dobija kada se socijalne interakcije ignorisu,
-i sluzi kao referenca za ST-GCNN.
+Each pedestrian is treated as an independent time series -- which is exactly the point
+of the baseline: it shows how much is gained when social interactions are ignored, and
+serves as the reference against which ST-GCNN is measured.
 
-Model radi nad RELATIVNIM pomeranjima (dx, dy), ne nad apsolutnim koordinatama.
-Razlog: apsolutne koordinate zavise od scene (koordinatni sistem svake scene je
-drugaciji), pa model nauci "gde su ljudi u ovoj sceni" umesto "kako se ljudi krecu".
-Sa pomerajima je model translaciono invarijantan i mnogo bolje generalizuje na
-neviđenu scenu (leave-one-scene-out protokol).
+The model operates on RELATIVE displacements (dx, dy), not on absolute coordinates.
+Reason: absolute coordinates are scene-dependent (every scene has its own coordinate
+frame), so the model would learn "where people stand in this scene" instead of "how
+people move". With displacements the model is translation invariant and generalises far
+better to an unseen scene (the leave-one-scene-out protocol).
 """
 
 import torch
@@ -34,15 +34,15 @@ class VanillaLSTM(nn.Module):
         self.num_layers = num_layers
         self.probabilistic = probabilistic
 
-        # Probabilisticka varijanta predvidja parametre bivarijantne Gausove raspodele
-        # (mu_x, mu_y, sigma_x, sigma_y, rho) umesto jedne tacke -- istu glavu i isti
-        # NLL gubitak koristi i Social-STGCNN. Sluzi da poredjenje dva modela bude
-        # posteno: bez toga bi se poredio model treniran L2 gubitkom sa modelom
-        # treniranim NLL gubitkom, pa razlika ne bi merila doprinos grafa nego
-        # razliku u funkciji gubitka.
+        # The probabilistic variant predicts the parameters of a bivariate Gaussian
+        # (mu_x, mu_y, sigma_x, sigma_y, rho) instead of a single point -- the same head
+        # and the same NLL loss that Social-STGCNN uses. It exists so that the comparison
+        # between the two models is fair: without it we would be comparing a model trained
+        # with an L2 loss against one trained with NLL, so the difference would measure the
+        # change of loss function rather than the contribution of the graph.
         self.output_dim = 5 if probabilistic else 2
 
-        # (dx, dy) -> vektor u embedding prostoru
+        # (dx, dy) -> vector in embedding space
         self.spatial_embedding = nn.Linear(2, embedding_dim)
 
         lstm_dropout = dropout if num_layers > 1 else 0.0
@@ -53,19 +53,20 @@ class VanillaLSTM(nn.Module):
     def forward(self, obs_traj_rel: torch.Tensor) -> torch.Tensor:
         """
         Args:
-            obs_traj_rel: (obs_len, N, 2) osmotreni pomeraji
+            obs_traj_rel: (obs_len, N, 2) observed displacements
         Returns:
-            (pred_len, N, 2) predvidjeni pomeraji, odnosno
-            (pred_len, N, 5) parametri raspodele u probabilistickoj varijanti
+            (pred_len, N, 2) predicted displacements, or
+            (pred_len, N, 5) distribution parameters in the probabilistic variant
         """
         n = obs_traj_rel.shape[1]
 
-        # --- Encoder: sazima istoriju kretanja u skriveno stanje ---
+        # --- Encoder: compresses the motion history into a hidden state ---
         emb = self.spatial_embedding(obs_traj_rel)  # (obs_len, N, emb)
         _, state = self.encoder(emb)
 
-        # --- Decoder: autoregresivno generise 12 buducih pomeraja ---
-        # Krece od poslednjeg osmotrenog pomeraja i svoj izlaz vraca kao sledeci ulaz.
+        # --- Decoder: autoregressively generates 12 future displacements ---
+        # It starts from the last observed displacement and feeds its own output back
+        # in as the next input.
         last_input = obs_traj_rel[-1]  # (N, 2)
         outputs = []
         for _ in range(self.pred_len):
@@ -73,8 +74,8 @@ class VanillaLSTM(nn.Module):
             out, state = self.decoder(dec_in, state)
             step = self.hidden2pos(out.squeeze(0))  # (N, output_dim)
             outputs.append(step)
-            # u dekoder se vraca samo predvidjeni pomeraj (srednja vrednost),
-            # ne i parametri neizvesnosti
+            # only the predicted displacement (the mean) is fed back into the decoder,
+            # not the uncertainty parameters
             last_input = step[..., :2]
 
         return torch.stack(outputs, dim=0)  # (pred_len, N, output_dim)

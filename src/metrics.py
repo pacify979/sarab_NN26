@@ -1,30 +1,30 @@
 """
-Standardne metrike za predikciju trajektorija: ADE i FDE.
+Standard trajectory-prediction metrics: ADE and FDE.
 
-VAZNA NAPOMENA za izvestaj:
-ADE NIJE srednja kvadratna greska (MSE), nego srednja EUKLIDSKA udaljenost
-izmedju predvidjene i stvarne pozicije, usrednjena po svim vremenskim koracima
-predikcije i po svim agentima. Zato se i izrazava u metrima -- MSE bi bio u m^2.
-Ovo je definicija koja se koristi u svim referentnim radovima (Social-LSTM,
-Social-GAN, Social-STGCNN), pa je bitno da se u radu navede tacno tako.
+IMPORTANT NOTE for the report:
+ADE is NOT mean squared error. It is the mean EUCLIDEAN distance between the
+predicted and the true position, averaged over all predicted timesteps and all
+agents. That is why it is expressed in metres -- MSE would be in m^2. This is the
+definition used in every reference paper (Social-LSTM, Social-GAN, Social-STGCNN),
+so the report must state it exactly this way.
 """
 
 import torch
 
 
 def displacement_error(pred: torch.Tensor, gt: torch.Tensor) -> torch.Tensor:
-    """ADE po agentu.
+    """Per-agent ADE.
 
     Args:
-        pred, gt: (pred_len, N, 2) apsolutne koordinate u metrima
+        pred, gt: (pred_len, N, 2) absolute coordinates in metres
     Returns:
-        (N,) srednja euklidska greska po agentu
+        (N,) mean Euclidean error per agent
     """
     return torch.norm(pred - gt, p=2, dim=-1).mean(dim=0)
 
 
 def final_displacement_error(pred: torch.Tensor, gt: torch.Tensor) -> torch.Tensor:
-    """FDE po agentu: euklidska udaljenost u poslednjem predvidjenom koraku.
+    """Per-agent FDE: Euclidean distance at the final predicted step.
 
     Args:
         pred, gt: (pred_len, N, 2)
@@ -35,22 +35,23 @@ def final_displacement_error(pred: torch.Tensor, gt: torch.Tensor) -> torch.Tens
 
 
 def relative_to_abs(rel_traj: torch.Tensor, start_pos: torch.Tensor) -> torch.Tensor:
-    """Pretvara predvidjena relativna pomeranja u apsolutne koordinate.
+    """Converts predicted relative displacements back to absolute coordinates.
 
     Args:
-        rel_traj:  (T, N, 2) pomeraji izmedju uzastopnih koraka
-        start_pos: (N, 2) poslednja OSMOTRENA pozicija svakog agenta
+        rel_traj:  (T, N, 2) displacements between consecutive steps
+        start_pos: (N, 2) last OBSERVED position of each agent
     Returns:
-        (T, N, 2) apsolutne pozicije
+        (T, N, 2) absolute positions
     """
     return torch.cumsum(rel_traj, dim=0) + start_pos.unsqueeze(0)
 
 
 class ErrorAccumulator:
-    """Sabira greske preko celog test skupa i racuna ispravan prosek po agentu.
+    """Accumulates errors over the whole test set and computes a correct per-agent mean.
 
-    Bitno: prosek proseka po batch-evima NIJE tacan jer batch-evi imaju razlicit
-    broj agenata. Zato akumuliramo sumu gresaka i broj agenata.
+    Important: averaging per-batch means is NOT correct, because batches contain
+    different numbers of agents. We therefore accumulate the error sum and the
+    agent count, and divide only at the end.
     """
 
     def __init__(self):

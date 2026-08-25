@@ -1,21 +1,21 @@
 """
-Automatska kalibracija hiperparametara pomocu Optuna (Bayesian optimization).
+Automatic hyperparameter calibration with Optuna (Bayesian optimisation).
 
-Primer:
+Examples:
     python -m src.tune_optuna --model stgcnn --scene zara1 --trials 15 --epochs 40
     python -m src.tune_optuna --model lstm   --scene zara1 --trials 15 --epochs 30
 
-Kako radi (za izvestaj):
-Optuna koristi TPE (Tree-structured Parzen Estimator) -- Bayesovsku metodu koja
-gradi verovatnosni model odnosa hiperparametri -> rezultat i sledeci trial bira
-tamo gde je ocekivano poboljsanje najvece. Za razliku od grid search-a, ne trosi
-vreme na ocigledno lose kombinacije, pa je efikasan i sa svega 15-20 pokusaja.
+How it works (for the report):
+Optuna uses TPE (Tree-structured Parzen Estimator) -- a Bayesian method that builds a
+probabilistic model of the hyperparameters -> score relationship and picks the next trial
+where the expected improvement is largest. Unlike grid search it does not waste time on
+obviously bad combinations, which makes it effective even with only 15-20 trials.
 
-Dodatno je ukljucen MedianPruner: trial koji je posle nekoliko epoha losiji od
-medijane dotadasnjih trial-ova se prekida ranije, sto stedi jos vremena.
+A MedianPruner is also enabled: a trial that falls below the median of the previous trials
+after a few epochs is stopped early, saving further time.
 
-VAZNO: optimizuje se VALIDACIONI ADE. Test skup se ne dodiruje tokom pretrage --
-inace bi izbor hiperparametara bio oblik curenja informacija iz test skupa.
+IMPORTANT: the objective is the VALIDATION ADE. The test set is never touched during the
+search -- otherwise selecting hyperparameters would be a form of test-set leakage.
 """
 
 import argparse
@@ -40,7 +40,7 @@ def objective_lstm(trial: optuna.Trial, args) -> float:
     device = args.device
     torch.manual_seed(args.seed)
 
-    # --- prostor pretrage ---
+    # --- search space ---
     lr = trial.suggest_float("lr", 1e-4, 5e-3, log=True)
     hidden_dim = trial.suggest_categorical("hidden_dim", [32, 64, 128, 256])
     embedding_dim = trial.suggest_categorical("embedding_dim", [16, 32, 64, 128])
@@ -70,7 +70,7 @@ def objective_lstm(trial: optuna.Trial, args) -> float:
         val_ade, _ = eval_lstm(model, val_loader, device)
         best = min(best, val_ade)
 
-        # pruning: prekid trial-a koji ocigledno zaostaje
+        # pruning: stop a trial that is clearly falling behind
         trial.report(val_ade, epoch)
         if trial.should_prune():
             raise optuna.TrialPruned()
@@ -82,10 +82,10 @@ def objective_stgcnn(trial: optuna.Trial, args) -> float:
     device = args.device
     torch.manual_seed(args.seed)
 
-    # --- prostor pretrage ---
+    # --- search space ---
     lr = trial.suggest_float("lr", 1e-4, 5e-3, log=True)
-    n_stgcnn = trial.suggest_int("n_stgcnn", 1, 3)          # broj graph konvolucionih blokova
-    n_txpcnn = trial.suggest_int("n_txpcnn", 3, 7)          # dubina vremenskog dekodera
+    n_stgcnn = trial.suggest_int("n_stgcnn", 1, 3)          # number of graph conv blocks
+    n_txpcnn = trial.suggest_int("n_txpcnn", 3, 7)          # depth of the temporal decoder
     kernel_size = trial.suggest_categorical("kernel_size", [3, 5])
     dropout = trial.suggest_float("dropout", 0.0, 0.3)
 
@@ -128,7 +128,7 @@ def main():
     p.add_argument("--data_root", default="data")
     p.add_argument("--out_dir", default="outputs")
     p.add_argument("--trials", type=int, default=15)
-    p.add_argument("--epochs", type=int, default=40, help="epoha po trial-u (kraci trening nego finalni)")
+    p.add_argument("--epochs", type=int, default=40, help="epochs per trial (shorter than the final run)")
     p.add_argument("--batch_size", type=int, default=32)
     p.add_argument("--val_every", type=int, default=5)
     p.add_argument("--val_samples", type=int, default=5)
@@ -151,12 +151,12 @@ def main():
         val = f"{trial.value:.4f}" if trial.value is not None else "pruned"
         print(f"  trial {trial.number:2d}  {state:<9}  val_ADE={val}  {trial.params}", flush=True)
 
-    print(f"Optuna pretraga: model={args.model} scena={args.scene} trials={args.trials}\n")
+    print(f"Optuna search: model={args.model} scene={args.scene} trials={args.trials}\n")
     study.optimize(lambda t: objective(t, args), n_trials=args.trials, callbacks=[callback])
 
     print("\n" + "=" * 60)
-    print(f"Najbolji val_ADE: {study.best_value:.4f} m")
-    print("Najbolji hiperparametri:")
+    print(f"Best val_ADE: {study.best_value:.4f} m")
+    print("Best hyperparameters:")
     for k, v in study.best_params.items():
         print(f"  {k:16s} = {v}")
     print("=" * 60)
@@ -179,8 +179,8 @@ def main():
             f,
             indent=2,
         )
-    print(f"\nRezultati sacuvani u {path}")
-    print(f"Finalni trening sa najboljim parametrima npr.:")
+    print(f"\nResults saved to {path}")
+    print("Final training with the best parameters, e.g.:")
     flags = " ".join(f"--{k} {v}" for k, v in study.best_params.items())
     print(f"  python -m src.train_{args.model} --scene {args.scene} --epochs 250 {flags}")
 

@@ -1,0 +1,51 @@
+[eth] epoch   1/250  loss=-0.3040  val_ADE=0.598  val_FDE=1.204
+[eth] epoch  50/250  loss=-2.3594  val_ADE=0.379  val_FDE=0.758
+[eth] epoch 100/250  loss=-2.6360  val_ADE=0.363  val_FDE=0.727
+[eth] epoch 150/250  loss=-2.8302  val_ADE=0.357  val_FDE=0.719
+[eth] epoch 200/250  loss=-3.1934  val_ADE=0.354  val_FDE=0.701
+[eth] epoch 250/250  loss=-3.4165  val_ADE=0.356  val_FDE=0.720
+[eth] TEST  det: ADE=1.002 FDE=1.993 | best-of-20: ADE=0.775 FDE=1.405  (272s)
+
+[hotel] epoch   1/250  loss=-0.4113  val_ADE=0.589  val_FDE=1.135
+[hotel] epoch  50/250  loss=-2.3355  val_ADE=0.383  val_FDE=0.753
+[hotel] epoch 100/250  loss=-2.5343  val_ADE=0.382  val_FDE=0.771
+[hotel] epoch 150/250  loss=-2.8723  val_ADE=0.366  val_FDE=0.735
+[hotel] epoch 200/250  loss=-3.0872  val_ADE=0.365  val_FDE=0.735
+[hotel] epoch 250/250  loss=-3.3695  val_ADE=0.372  val_FDE=0.761
+[hotel] TEST  det: ADE=0.516 FDE=1.075 | best-of-20: ADE=0.342 FDE=0.659  (262s)
+
+[univ] epoch   1/250  loss=-0.2438  val_ADE=0.630  val_FDE=1.299
+[univ] epoch  50/250  loss=-2.7943  val_ADE=0.361  val_FDE=0.676
+[univ] epoch 100/250  loss=-3.2133  val_ADE=0.311  val_FDE=0.604
+[univ] epoch 150/250  loss=-3.7368  val_ADE=0.313  val_FDE=0.619
+[univ] epoch 200/250  loss=-4.1530  val_ADE=0.319  val_FDE=0.644
+[univ] epoch 250/250  loss=-4.5241  val_ADE=0.316  val_FDE=0.643
+[univ] TEST  det: ADE=0.583 FDE=1.255 | best-of-20: ADE=0.411 FDE=0.816  (147s)
+
+[zara1] epoch   1/250  loss=-0.3804  val_ADE=0.769  val_FDE=1.673
+[zara1] epoch  50/250  loss=-2.3959  val_ADE=0.391  val_FDE=0.770
+[zara1] epoch 100/250  loss=-2.6222  val_ADE=0.373  val_FDE=0.747
+[zara1] epoch 150/250  loss=-2.8974  val_ADE=0.369  val_FDE=0.729
+[zara1] epoch 200/250  loss=-3.1533  val_ADE=0.363  val_FDE=0.730
+[zara1] epoch 250/250  loss=-3.3555  val_ADE=0.367  val_FDE=0.735
+[zara1] TEST  det: ADE=0.419 FDE=0.924 | best-of-20: ADE=0.276 FDE=0.497  (250s)
+
+[zara2] epoch   1/250  loss=-0.2696  val_ADE=0.580  val_FDE=1.122
+[zara2] epoch  50/250  loss=-2.1574  val_ADE=0.413  val_FDE=0.802
+[zara2] epoch 100/250  loss=-2.3476  val_ADE=0.403  val_FDE=0.797
+[zara2] epoch 150/250  loss=-2.4833  val_ADE=0.396  val_FDE=0.790
+[zara2] epoch 200/250  loss=-2.6415  val_ADE=0.398  val_FDE=0.789
+[zara2] epoch 250/250  loss=-2.8051  val_ADE=0.395  val_FDE=0.790
+[zara2] TEST  det: ADE=0.323 FDE=0.724 | best-of-20: ADE=0.221 FDE=0.428  (225s)
+
+==============================================================
+SCENA           ade_det      fde_det   ade_best20   fde_best20
+--------------------------------------------------------------
+eth               1.002        1.993        0.775        1.405
+hotel             0.516        1.075        0.342        0.659
+univ              0.583        1.255        0.411        0.816
+zara1             0.419        0.924        0.276        0.497
+zara2             0.323        0.724        0.221        0.428
+--------------------------------------------------------------
+PROSEK            0.568        1.194        0.405        0.761
+==============================================================

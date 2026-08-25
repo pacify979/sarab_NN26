@@ -1,13 +1,14 @@
 """
-Trening skripta za Vanilla LSTM baseline.
+Training script for the Vanilla LSTM baseline.
 
-Primer:
-    python -m src.train_lstm --scene eth --epochs 50
-    python -m src.train_lstm --scene all --epochs 50    # trenira redom sve 5 scena
+Examples:
+    python -m src.train_lstm --scene eth --epochs 100
+    python -m src.train_lstm --scene all --epochs 100                  # all five scenes
+    python -m src.train_lstm --scene all --epochs 250 --probabilistic  # control model
 
-Leave-one-scene-out protokol: za scenu `eth`, folder data/eth/train sadrzi
-podatke iz preostale 4 scene, a data/eth/test iskljucivo eth. Model se dakle
-testira na sceni koju nikada nije video.
+Leave-one-scene-out protocol: for the scene `eth`, the folder data/eth/train contains the
+data from the remaining four scenes, while data/eth/test contains only eth. The model is
+therefore tested on a scene it has never seen.
 """
 
 import argparse
@@ -27,19 +28,19 @@ SCENES = ["eth", "hotel", "univ", "zara1", "zara2"]
 
 
 def l2_loss(pred_rel: torch.Tensor, gt_rel: torch.Tensor) -> torch.Tensor:
-    """Srednja euklidska greska nad pomerajima -- direktno korelira sa ADE."""
+    """Mean Euclidean error over displacements -- directly correlated with ADE."""
     return torch.norm(pred_rel - gt_rel, p=2, dim=-1).mean()
 
 
 @torch.no_grad()
 def evaluate(model: nn.Module, loader, device: str):
-    """Racuna ADE/FDE u METRIMA nad apsolutnim koordinatama (deterministicki)."""
+    """Computes ADE/FDE in METRES over absolute coordinates (deterministic)."""
     model.eval()
     acc = ErrorAccumulator()
     for obs, pred_gt, obs_rel, _, _ in loader:
         obs, pred_gt, obs_rel = obs.to(device), pred_gt.to(device), obs_rel.to(device)
         pred_rel = model(obs_rel)[..., :2]
-        # pomeraji -> apsolutne pozicije, polazeci od poslednje osmotrene tacke
+        # displacements -> absolute positions, starting from the last observed point
         pred_abs = relative_to_abs(pred_rel, obs[-1])
         acc.update(pred_abs, pred_gt)
     return acc.ade, acc.fde
@@ -47,9 +48,9 @@ def evaluate(model: nn.Module, loader, device: str):
 
 @torch.no_grad()
 def evaluate_prob(model: nn.Module, loader, device: str, n_samples: int = 20):
-    """Evaluacija probabilisticke varijante: vraca (ade_det, fde_det, ade_bestK, fde_bestK).
+    """Evaluates the probabilistic variant: returns (ade_det, fde_det, ade_bestK, fde_bestK).
 
-    Identican protokol kao kod ST-GCNN-a, da bi brojke bile direktno uporedive.
+    Identical protocol to the ST-GCNN one, so that the figures are directly comparable.
     """
     from src.train_stgcnn import sample_trajectories
 
@@ -106,24 +107,24 @@ def train_one_scene(scene: str, args) -> dict:
             obs_rel, pred_rel_gt = obs_rel.to(device), pred_rel_gt.to(device)
             optimizer.zero_grad()
             out = model(obs_rel)
-            # probabilisticka varijanta uci raspodelu (isti NLL kao ST-GCNN),
-            # deterministicka uci jednu tacku (L2)
+            # the probabilistic variant learns a distribution (the same NLL as ST-GCNN),
+            # the deterministic one learns a single point (L2)
             loss = bivariate_loss(out, pred_rel_gt) if args.probabilistic else l2_loss(out, pred_rel_gt)
             loss.backward()
-            # gradient clipping: LSTM dekoder je autoregresivan pa gradijenti umeju da eksplodiraju
+            # gradient clipping: the LSTM decoder is autoregressive, so gradients can explode
             nn.utils.clip_grad_norm_(model.parameters(), args.clip)
             optimizer.step()
             total += loss.item()
             nb += 1
 
         if args.probabilistic:
-            # selekcija po best-of-K ADE, isti kriterijum kao kod ST-GCNN-a
+            # selection by best-of-K ADE, the same criterion used for ST-GCNN
             _, _, val_ade, val_fde = evaluate_prob(model, val_loader, device, args.val_samples)
         else:
             val_ade, val_fde = evaluate(model, val_loader, device)
         history.append({"epoch": epoch, "loss": total / nb, "val_ade": val_ade, "val_fde": val_fde})
 
-        # model biramo po validacionom ADE, ne po trening lossu
+        # the checkpoint is selected by validation ADE, never by training loss
         if val_ade < best_val_ade:
             best_val_ade = val_ade
             torch.save(model.state_dict(), ckpt_path)
@@ -134,7 +135,7 @@ def train_one_scene(scene: str, args) -> dict:
                 f"loss={total/nb:.4f}  val_ADE={val_ade:.3f}  val_FDE={val_fde:.3f}"
             )
 
-    # finalna evaluacija sa najboljim checkpointom
+    # final evaluation using the best checkpoint
     model.load_state_dict(torch.load(ckpt_path, map_location=device, weights_only=True))
     elapsed = time.time() - t0
 
@@ -175,8 +176,8 @@ def main():
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--log_every", type=int, default=5)
     p.add_argument("--probabilistic", action="store_true",
-                   help="predvidja raspodelu (bivarijantni NLL) umesto jedne tacke -- "
-                        "omogucava posteno best-of-20 poredjenje sa ST-GCNN-om")
+                   help="predict a distribution (bivariate NLL) instead of a single point -- "
+                        "enables a fair best-of-20 comparison against ST-GCNN")
     p.add_argument("--val_samples", type=int, default=5)
     p.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     args = p.parse_args()

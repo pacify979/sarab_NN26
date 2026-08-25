@@ -1,16 +1,17 @@
 """
-Data loader za ETH-UCY skup podataka.
+Data loader for the ETH-UCY dataset.
 
-Format ulaznih fajlova (tab-separated):
+Input file format (tab-separated):
     frame_id    ped_id    x    y
 
-Iz svake scene se izvlace sekvence duzine obs_len + pred_len (8 + 12 = 20 frejmova).
-Zadrzavaju se samo pesaci koji su prisutni u SVIH 20 frejmova sekvence -- to je
-standardni protokol iz Social-GAN / Social-STGCNN radova, pa su rezultati uporedivi
-sa brojkama iz literature.
+Sequences of length obs_len + pred_len (8 + 12 = 20 frames) are extracted from each
+scene. Only pedestrians present in ALL 20 frames of a sequence are retained -- this is
+the standard protocol from the Social-GAN / Social-STGCNN papers, which keeps our
+results comparable to the figures reported in the literature.
 
-Isti loader koristi i LSTM baseline i ST-GCNN model: LSTM ignorise `seq_start_end`,
-dok ST-GCNN preko njega zna koji pesaci pripadaju istoj sceni (tj. istom grafu).
+The same loader serves both the LSTM baseline and the ST-GCNN model: the LSTM ignores
+`seq_start_end` entirely, while the ST-GCNN uses it to know which pedestrians belong to
+the same scene (i.e. the same graph).
 """
 
 import os
@@ -23,7 +24,7 @@ from torch.utils.data import Dataset
 
 
 def read_file(path: str) -> np.ndarray:
-    """Ucitava jedan .txt fajl u niz oblika (N, 4) = [frame, ped_id, x, y]."""
+    """Loads one .txt file into an array of shape (N, 4) = [frame, ped_id, x, y]."""
     rows = []
     with open(path, "r") as f:
         for line in f:
@@ -35,13 +36,13 @@ def read_file(path: str) -> np.ndarray:
 
 
 class TrajectoryDataset(Dataset):
-    """Jedna instanca = jedna vremenska sekvenca sa svim pesacima u njoj.
+    """One item = one time window containing every pedestrian present in it.
 
-    Vraca tuple tenzora oblika (n_ped, 2, T):
-        obs_traj       apsolutne koordinate, prvih obs_len koraka
-        pred_traj      apsolutne koordinate, narednih pred_len koraka (ground truth)
-        obs_traj_rel   relativna pomeranja (razlike izmedju uzastopnih tacaka)
-        pred_traj_rel  relativna pomeranja za buducnost
+    Returns a tuple of tensors of shape (n_ped, 2, T):
+        obs_traj       absolute coordinates, first obs_len steps
+        pred_traj      absolute coordinates, next pred_len steps (ground truth)
+        obs_traj_rel   relative displacements (differences between consecutive points)
+        pred_traj_rel  relative displacements for the future
     """
 
     def __init__(
@@ -59,8 +60,8 @@ class TrajectoryDataset(Dataset):
         self.pred_len = pred_len
         self.seq_len = obs_len + pred_len
 
-        # Parsiranje je sporo (univ ima ~100k redova), pa kesiramo rezultat na disk.
-        # Optuna pokrece desetine trial-ova -- bez kesa bi svaki ponovo parsirao podatke.
+        # Parsing is slow (univ has ~100k rows), so the result is cached on disk.
+        # Optuna runs dozens of trials -- without the cache each would re-parse the data.
         cache_key = f"{data_dir.strip(os.sep).replace(os.sep, '_')}_{obs_len}_{pred_len}_{skip}_{min_ped}.pkl"
         cache_path = os.path.join(cache_dir, cache_key)
         if os.path.exists(cache_path):
@@ -72,8 +73,8 @@ class TrajectoryDataset(Dataset):
             with open(cache_path, "wb") as f:
                 pickle.dump((seq_list, seq_list_rel, self.seq_start_end), f)
 
-        # Sve trajektorije iz svih sekvenci su spojene u jedan veliki tenzor;
-        # seq_start_end cuva granice pojedinacnih sekvenci u tom tenzoru.
+        # All trajectories from all sequences are concatenated into one large tensor;
+        # seq_start_end stores the boundaries of the individual sequences within it.
         seq_list = np.concatenate(seq_list, axis=0)
         seq_list_rel = np.concatenate(seq_list_rel, axis=0)
 
@@ -90,14 +91,14 @@ class TrajectoryDataset(Dataset):
             if f.endswith(".txt")
         )
         if not files:
-            raise FileNotFoundError(f"Nema .txt fajlova u {self.data_dir}")
+            raise FileNotFoundError(f"No .txt files found in {self.data_dir}")
 
         seq_list, seq_list_rel, num_peds_in_seq = [], [], []
 
         for path in files:
             data = read_file(path)
             frames = np.unique(data[:, 0]).tolist()
-            # mapa frame -> indeks, da izbegnemo O(n) pretragu u unutrasnjoj petlji
+            # frame -> index map, to avoid an O(n) list lookup in the inner loop
             frame_to_idx = {f: i for i, f in enumerate(frames)}
             frame_data = [data[data[:, 0] == f, :] for f in frames]
 
@@ -113,7 +114,7 @@ class TrajectoryDataset(Dataset):
                     ped_seq = curr_seq_data[curr_seq_data[:, 1] == ped_id, :]
                     pad_front = frame_to_idx[ped_seq[0, 0]] - idx
                     pad_end = frame_to_idx[ped_seq[-1, 0]] - idx + 1
-                    # pesak mora da postoji u svih seq_len uzastopnih frejmova
+                    # the pedestrian must be present in all seq_len consecutive frames
                     if pad_end - pad_front != self.seq_len or ped_seq.shape[0] != self.seq_len:
                         continue
 
@@ -148,13 +149,13 @@ class TrajectoryDataset(Dataset):
 
 
 def seq_collate(batch):
-    """Spaja vise sekvenci u batch.
+    """Collates several sequences into a batch.
 
-    Broj pesaka po sceni je promenljiv, pa ne mozemo u klasican (B, ...) tenzor.
-    Umesto toga sve pesake nizemo po dimenziji N i pamtimo granice scena u
-    `seq_start_end` -- konvencija iz Social-GAN-a.
+    The number of pedestrians per scene varies, so a standard (B, ...) tensor does
+    not fit. Instead every pedestrian is concatenated along dimension N and the
+    scene boundaries are recorded in `seq_start_end` -- the Social-GAN convention.
 
-    Izlaz:
+    Returns:
         obs_traj      (obs_len, N, 2)
         pred_traj     (pred_len, N, 2)
         obs_traj_rel  (obs_len, N, 2)
@@ -185,7 +186,7 @@ def data_loader(
     shuffle: bool = True,
     num_workers: int = 0,
 ):
-    """Pomocna funkcija: npr. data_loader('data/eth', 'train')."""
+    """Convenience helper, e.g. data_loader('data/eth', 'train')."""
     from torch.utils.data import DataLoader
 
     dset = TrajectoryDataset(
