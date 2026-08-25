@@ -1,0 +1,31 @@
+Optuna pretraga: model=lstm scena=zara1 trials=15
+
+  trial  0  COMPLETE   val_ADE=0.4346  {'lr': 0.00043284502212938834, 'hidden_dim': 32, 'embedding_dim': 64, 'num_layers': 2, 'dropout': 0.006175348288740734}
+  trial  1  COMPLETE   val_ADE=0.4326  {'lr': 0.0044447541666908135, 'hidden_dim': 32, 'embedding_dim': 32, 'num_layers': 2, 'dropout': 0.04184815819561255}
+  trial  2  COMPLETE   val_ADE=0.4356  {'lr': 0.0003135775732257748, 'hidden_dim': 128, 'embedding_dim': 128, 'num_layers': 1, 'dropout': 0.019515477895583853}
+  trial  3  PRUNED     val_ADE=0.4756  {'lr': 0.004093813608598782, 'hidden_dim': 32, 'embedding_dim': 16, 'num_layers': 1, 'dropout': 0.2727961206236346}
+  trial  4  PRUNED     val_ADE=0.7288  {'lr': 0.00027520696850790545, 'hidden_dim': 32, 'embedding_dim': 32, 'num_layers': 2, 'dropout': 0.17936999364332554}
+  trial  5  COMPLETE   val_ADE=0.4285  {'lr': 0.0036832964384234204, 'hidden_dim': 256, 'embedding_dim': 64, 'num_layers': 1, 'dropout': 0.16280882494747453}
+  trial  6  PRUNED     val_ADE=0.5222  {'lr': 0.000173550564698551, 'hidden_dim': 128, 'embedding_dim': 64, 'num_layers': 2, 'dropout': 0.2313811040057837}
+  trial  7  PRUNED     val_ADE=0.7078  {'lr': 0.00013359790328445562, 'hidden_dim': 128, 'embedding_dim': 16, 'num_layers': 2, 'dropout': 0.19126724140656393}
+  trial  8  COMPLETE   val_ADE=0.4283  {'lr': 0.00321623546920742, 'hidden_dim': 256, 'embedding_dim': 32, 'num_layers': 1, 'dropout': 0.007625738023228556}
+  trial  9  PRUNED     val_ADE=0.7571  {'lr': 0.00015251209898002935, 'hidden_dim': 64, 'embedding_dim': 16, 'num_layers': 1, 'dropout': 0.023093972948637898}
+  trial 10  PRUNED     val_ADE=0.5266  {'lr': 0.0012291462358789713, 'hidden_dim': 256, 'embedding_dim': 32, 'num_layers': 1, 'dropout': 0.09948525433427291}
+  trial 11  PRUNED     val_ADE=0.4912  {'lr': 0.0017606863380915235, 'hidden_dim': 256, 'embedding_dim': 64, 'num_layers': 1, 'dropout': 0.10585341175194604}
+  trial 12  PRUNED     val_ADE=0.4777  {'lr': 0.002013576604659616, 'hidden_dim': 256, 'embedding_dim': 128, 'num_layers': 1, 'dropout': 0.10771965998941996}
+  trial 13  PRUNED     val_ADE=0.5204  {'lr': 0.0026270194189255587, 'hidden_dim': 256, 'embedding_dim': 32, 'num_layers': 1, 'dropout': 0.15544774969929556}
+  trial 14  PRUNED     val_ADE=0.5016  {'lr': 0.000964263918725563, 'hidden_dim': 256, 'embedding_dim': 64, 'num_layers': 1, 'dropout': 0.28848232526836104}
+
+============================================================
+Najbolji val_ADE: 0.4283 m
+Najbolji hiperparametri:
+  lr               = 0.00321623546920742
+  hidden_dim       = 256
+  embedding_dim    = 32
+  num_layers       = 1
+  dropout          = 0.007625738023228556
+============================================================
+
+Rezultati sacuvani u outputs/optuna_lstm_zara1.json
+Finalni trening sa najboljim parametrima npr.:
+  python -m src.train_lstm --scene zara1 --epochs 250 --lr 0.00321623546920742 --hidden_dim 256 --embedding_dim 32 --num_layers 1 --dropout 0.007625738023228556

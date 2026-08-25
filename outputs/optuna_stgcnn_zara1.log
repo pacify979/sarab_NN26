@@ -1,0 +1,31 @@
+Optuna pretraga: model=stgcnn scena=zara1 trials=15
+
+  trial  0  COMPLETE   val_ADE=0.4192  {'lr': 0.00043284502212938834, 'n_stgcnn': 3, 'n_txpcnn': 6, 'kernel_size': 3, 'dropout': 0.04679835610086079}
+  trial  1  COMPLETE   val_ADE=0.5380  {'lr': 0.00012551115172973836, 'n_stgcnn': 3, 'n_txpcnn': 6, 'kernel_size': 3, 'dropout': 0.29097295564859826}
+  trial  2  COMPLETE   val_ADE=0.4006  {'lr': 0.002595942550311264, 'n_stgcnn': 1, 'n_txpcnn': 3, 'kernel_size': 5, 'dropout': 0.15742692948967135}
+  trial  3  PRUNED     val_ADE=0.4727  {'lr': 0.0005418282319533242, 'n_stgcnn': 1, 'n_txpcnn': 6, 'kernel_size': 5, 'dropout': 0.1099085529881075}
+  trial  4  COMPLETE   val_ADE=0.4146  {'lr': 0.0005954553793888993, 'n_stgcnn': 3, 'n_txpcnn': 3, 'kernel_size': 5, 'dropout': 0.013935123815999317}
+  trial  5  PRUNED     val_ADE=0.5082  {'lr': 0.001076962247826313, 'n_stgcnn': 1, 'n_txpcnn': 3, 'kernel_size': 5, 'dropout': 0.24251920443493832}
+  trial  6  PRUNED     val_ADE=0.6772  {'lr': 0.00032925293631105276, 'n_stgcnn': 1, 'n_txpcnn': 6, 'kernel_size': 3, 'dropout': 0.14855307303338106}
+  trial  7  PRUNED     val_ADE=1.0197  {'lr': 0.00011439974749291271, 'n_stgcnn': 3, 'n_txpcnn': 4, 'kernel_size': 3, 'dropout': 0.15602040635334324}
+  trial  8  COMPLETE   val_ADE=0.3915  {'lr': 0.0008488762161408717, 'n_stgcnn': 1, 'n_txpcnn': 7, 'kernel_size': 5, 'dropout': 0.26844820512829465}
+  trial  9  PRUNED     val_ADE=0.5197  {'lr': 0.0010370844668954541, 'n_stgcnn': 3, 'n_txpcnn': 3, 'kernel_size': 3, 'dropout': 0.0975990992289793}
+  trial 10  COMPLETE   val_ADE=0.3905  {'lr': 0.004257457644957693, 'n_stgcnn': 2, 'n_txpcnn': 7, 'kernel_size': 5, 'dropout': 0.22165395625003897}
+  trial 11  COMPLETE   val_ADE=0.3911  {'lr': 0.0034841373014948248, 'n_stgcnn': 2, 'n_txpcnn': 7, 'kernel_size': 5, 'dropout': 0.2314332219182296}
+  trial 12  COMPLETE   val_ADE=0.3933  {'lr': 0.004894047805715858, 'n_stgcnn': 2, 'n_txpcnn': 7, 'kernel_size': 5, 'dropout': 0.22316848472138373}
+  trial 13  COMPLETE   val_ADE=0.3894  {'lr': 0.00271550054407983, 'n_stgcnn': 2, 'n_txpcnn': 7, 'kernel_size': 5, 'dropout': 0.19429947797142905}
+  trial 14  PRUNED     val_ADE=0.4965  {'lr': 0.0019312970095971644, 'n_stgcnn': 2, 'n_txpcnn': 5, 'kernel_size': 5, 'dropout': 0.2014478622814523}
+
+============================================================
+Najbolji val_ADE: 0.3894 m
+Najbolji hiperparametri:
+  lr               = 0.00271550054407983
+  n_stgcnn         = 2
+  n_txpcnn         = 7
+  kernel_size      = 5
+  dropout          = 0.19429947797142905
+============================================================
+
+Rezultati sacuvani u outputs/optuna_stgcnn_zara1.json
+Finalni trening sa najboljim parametrima npr.:
+  python -m src.train_stgcnn --scene zara1 --epochs 250 --lr 0.00271550054407983 --n_stgcnn 2 --n_txpcnn 7 --kernel_size 5 --dropout 0.19429947797142905

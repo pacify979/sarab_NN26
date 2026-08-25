@@ -1,0 +1,195 @@
+{
+  "model": "stgcnn",
+  "scene": "zara1",
+  "best_value": 0.3894056795555868,
+  "best_params": {
+    "lr": 0.00271550054407983,
+    "n_stgcnn": 2,
+    "n_txpcnn": 7,
+    "kernel_size": 5,
+    "dropout": 0.19429947797142905
+  },
+  "n_trials": 15,
+  "trials": [
+    {
+      "number": 0,
+      "state": "COMPLETE",
+      "value": 0.41920646620385443,
+      "params": {
+        "lr": 0.00043284502212938834,
+        "n_stgcnn": 3,
+        "n_txpcnn": 6,
+        "kernel_size": 3,
+        "dropout": 0.04679835610086079
+      }
+    },
+    {
+      "number": 1,
+      "state": "COMPLETE",
+      "value": 0.5379967409887432,
+      "params": {
+        "lr": 0.00012551115172973836,
+        "n_stgcnn": 3,
+        "n_txpcnn": 6,
+        "kernel_size": 3,
+        "dropout": 0.29097295564859826
+      }
+    },
+    {
+      "number": 2,
+      "state": "COMPLETE",
+      "value": 0.40058692590689954,
+      "params": {
+        "lr": 0.002595942550311264,
+        "n_stgcnn": 1,
+        "n_txpcnn": 3,
+        "kernel_size": 5,
+        "dropout": 0.15742692948967135
+      }
+    },
+    {
+      "number": 3,
+      "state": "PRUNED",
+      "value": 0.4727212334120715,
+      "params": {
+        "lr": 0.0005418282319533242,
+        "n_stgcnn": 1,
+        "n_txpcnn": 6,
+        "kernel_size": 5,
+        "dropout": 0.1099085529881075
+      }
+    },
+    {
+      "number": 4,
+      "state": "COMPLETE",
+      "value": 0.41455226952646984,
+      "params": {
+        "lr": 0.0005954553793888993,
+        "n_stgcnn": 3,
+        "n_txpcnn": 3,
+        "kernel_size": 5,
+        "dropout": 0.013935123815999317
+      }
+    },
+    {
+      "number": 5,
+      "state": "PRUNED",
+      "value": 0.5082139641414454,
+      "params": {
+        "lr": 0.001076962247826313,
+        "n_stgcnn": 1,
+        "n_txpcnn": 3,
+        "kernel_size": 5,
+        "dropout": 0.24251920443493832
+      }
+    },
+    {
+      "number": 6,
+      "state": "PRUNED",
+      "value": 0.6772488215823232,
+      "params": {
+        "lr": 0.00032925293631105276,
+        "n_stgcnn": 1,
+        "n_txpcnn": 6,
+        "kernel_size": 3,
+        "dropout": 0.14855307303338106
+      }
+    },
+    {
+      "number": 7,
+      "state": "PRUNED",
+      "value": 1.0197437045014934,
+      "params": {
+        "lr": 0.00011439974749291271,
+        "n_stgcnn": 3,
+        "n_txpcnn": 4,
+        "kernel_size": 3,
+        "dropout": 0.15602040635334324
+      }
+    },
+    {
+      "number": 8,
+      "state": "COMPLETE",
+      "value": 0.3915275644373011,
+      "params": {
+        "lr": 0.0008488762161408717,
+        "n_stgcnn": 1,
+        "n_txpcnn": 7,
+        "kernel_size": 5,
+        "dropout": 0.26844820512829465
+      }
+    },
+    {
+      "number": 9,
+      "state": "PRUNED",
+      "value": 0.5197159979078505,
+      "params": {
+        "lr": 0.0010370844668954541,
+        "n_stgcnn": 3,
+        "n_txpcnn": 3,
+        "kernel_size": 3,
+        "dropout": 0.0975990992289793
+      }
+    },
+    {
+      "number": 10,
+      "state": "COMPLETE",
+      "value": 0.3904817350852637,
+      "params": {
+        "lr": 0.004257457644957693,
+        "n_stgcnn": 2,
+        "n_txpcnn": 7,
+        "kernel_size": 5,
+        "dropout": 0.22165395625003897
+      }
+    },
+    {
+      "number": 11,
+      "state": "COMPLETE",
+      "value": 0.3911292990784586,
+      "params": {
+        "lr": 0.0034841373014948248,
+        "n_stgcnn": 2,
+        "n_txpcnn": 7,
+        "kernel_size": 5,
+        "dropout": 0.2314332219182296
+      }
+    },
+    {
+      "number": 12,
+      "state": "COMPLETE",
+      "value": 0.39331890808211434,
+      "params": {
+        "lr": 0.004894047805715858,
+        "n_stgcnn": 2,
+        "n_txpcnn": 7,
+        "kernel_size": 5,
+        "dropout": 0.22316848472138373
+      }
+    },
+    {
+      "number": 13,
+      "state": "COMPLETE",
+      "value": 0.3894056795555868,
+      "params": {
+        "lr": 0.00271550054407983,
+        "n_stgcnn": 2,
+        "n_txpcnn": 7,
+        "kernel_size": 5,
+        "dropout": 0.19429947797142905
+      }
+    },
+    {
+      "number": 14,
+      "state": "PRUNED",
+      "value": 0.4964577728583489,
+      "params": {
+        "lr": 0.0019312970095971644,
+        "n_stgcnn": 2,
+        "n_txpcnn": 5,
+        "kernel_size": 5,
+        "dropout": 0.2014478622814523
+      }
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+[eth] epoch   1/100  loss=0.1669  val_ADE=0.682  val_FDE=1.403
+[eth] epoch  25/100  loss=0.0941  val_ADE=0.439  val_FDE=0.949
+[eth] epoch  50/100  loss=0.0924  val_ADE=0.421  val_FDE=0.915
+[eth] epoch  75/100  loss=0.0911  val_ADE=0.423  val_FDE=0.921
+[eth] epoch 100/100  loss=0.0887  val_ADE=0.419  val_FDE=0.911
+[eth] TEST  ADE=1.007 m  FDE=1.996 m  (110s)
+
+[hotel] epoch   1/100  loss=0.1659  val_ADE=0.605  val_FDE=1.233
+[hotel] epoch  25/100  loss=0.0956  val_ADE=0.437  val_FDE=0.955
+[hotel] epoch  50/100  loss=0.0946  val_ADE=0.438  val_FDE=0.956
+[hotel] epoch  75/100  loss=0.0927  val_ADE=0.438  val_FDE=0.958
+[hotel] epoch 100/100  loss=0.0905  val_ADE=0.438  val_FDE=0.955
+[hotel] TEST  ADE=0.457 m  FDE=0.936 m  (115s)
+
+[univ] epoch   1/100  loss=0.1844  val_ADE=0.526  val_FDE=1.092
+[univ] epoch  25/100  loss=0.0773  val_ADE=0.383  val_FDE=0.822
+[univ] epoch  50/100  loss=0.0745  val_ADE=0.361  val_FDE=0.773
+[univ] epoch  75/100  loss=0.0714  val_ADE=0.369  val_FDE=0.796
+[univ] epoch 100/100  loss=0.0692  val_ADE=0.371  val_FDE=0.803
+[univ] TEST  ADE=0.577 m  FDE=1.278 m  (52s)
+
+[zara1] epoch   1/100  loss=0.1694  val_ADE=0.761  val_FDE=1.562
+[zara1] epoch  25/100  loss=0.0960  val_ADE=0.440  val_FDE=0.957
+[zara1] epoch  50/100  loss=0.0946  val_ADE=0.432  val_FDE=0.936
+[zara1] epoch  75/100  loss=0.0925  val_ADE=0.432  val_FDE=0.932
+[zara1] epoch 100/100  loss=0.0905  val_ADE=0.428  val_FDE=0.929
+[zara1] TEST  ADE=0.402 m  FDE=0.886 m  (102s)
+
+[zara2] epoch   1/100  loss=0.1853  val_ADE=0.715  val_FDE=1.435
+[zara2] epoch  25/100  loss=0.1009  val_ADE=0.474  val_FDE=1.024
+[zara2] epoch  50/100  loss=0.0995  val_ADE=0.476  val_FDE=1.024
+[zara2] epoch  75/100  loss=0.0972  val_ADE=0.476  val_FDE=1.026
+[zara2] epoch 100/100  loss=0.0951  val_ADE=0.479  val_FDE=1.035
+[zara2] TEST  ADE=0.316 m  FDE=0.699 m  (93s)
+
+====================================================
+SCENA          ADE (m)     FDE (m)
+----------------------------------------------------
+eth              1.007       1.996
+hotel            0.457       0.936
+univ             0.577       1.278
+zara1            0.402       0.886
+zara2            0.316       0.699
+----------------------------------------------------
+PROSEK           0.552       1.159
+====================================================
